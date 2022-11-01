@@ -1,9 +1,0 @@
-name: Build And Publish Dockerhub images
-on:
-  workflow_dispatch:
-jobs:
-  build:
-    runs-on: self-hosted
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
