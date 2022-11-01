@@ -73,7 +73,7 @@ if(isGithubActionsBuild){
 
 // Remote GCP Cache uses default gcloud-cli credentials 
 
-if(isRemoteCacheEnabled || (isMasterGHBuild && !isHostedAgent)) { //Only Self-Hosted Runners have a default GCP Service Account
+if(isRemoteCacheEnabled || (isMasterGHBuild && isHostedAgent)) { //Only Self-Hosted Runners have a default GCP Service Account
   
   buildCache {
       registerBuildCacheService(GcpBuildCache::class, GcpBuildCacheServiceFactory::class)
