@@ -31,7 +31,7 @@ buildscript{
         
     }
     dependencies{
-        classpath("androidx.build.gradle.gcpbuildcache:gcpbuildcache:1.0.0-beta01")
+        classpath("androidx.build.gradle.gcpbuildcache:remote-gcp-gradle-cache:1.0.0-beta01")
         classpath("com.google.cloud:google-cloud-storage:2.9.3")
     }
 }
