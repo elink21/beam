@@ -67,13 +67,13 @@ val isRemoteCacheEnabled = System.getenv().containsKey("BEAM_REMOTE_CACHE_ENABLE
 var isMasterGHBuild= false
 var isHostedAgent= false
 if(isGithubActionsBuild){
-  isMasterGHBuild =  System.getenv("GITHUB_REPOSITORY_OWNER").equals("elink21")
+  isMasterGHBuild =  System.getenv("GITHUB_REPOSITORY_OWNER").equals("apache")
   isHostedAgent= System.getenv("RUNNER_NAME").equals("Hosted Agent")
 }
 
 // Remote GCP Cache uses default gcloud-cli credentials 
 
-if(isRemoteCacheEnabled || (isMasterGHBuild && !isHostedAgent)) { //Only Self-Hosted Runners have a default GCP Service Account
+if(isRemoteCacheEnabled || (isMasterGHBuild && !isHostedAgent)) { //Only Self-Hosted Runners currently have a default GCP Service Account
   
   buildCache {
       registerBuildCacheService(GcpBuildCache::class, GcpBuildCacheServiceFactory::class)
