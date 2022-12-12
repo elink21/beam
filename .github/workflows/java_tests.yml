@@ -168,7 +168,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [[self-hosted, ubuntu-20.04]]
+        os: [[self-hosted, Windows]]
     steps:
       - name: Check out code
         uses: actions/checkout@v3
