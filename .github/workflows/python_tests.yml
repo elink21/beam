@@ -101,10 +101,7 @@ jobs:
       matrix:
         os: [[self-hosted,ubuntu-20.04]]
         params: [
-          {"py_ver": "3.7", "tox_env": "py37"},
-          {"py_ver": "3.8", "tox_env": "py38"},
-          {"py_ver": "3.9", "tox_env": "py39"},
-          {"py_ver": "3.10", "tox_env": "py310" },
+          {"py_ver": "3.7", "tox_env": "py37"}
         ]
     steps:
       - name: Checkout code
@@ -119,7 +116,6 @@ jobs:
       - name: Install tox
         run: pip install tox==3.27.1
       - name: Run tests basic unix
-        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
         working-directory: ./sdks/python
         run: tox -c tox.ini -e ${{ matrix.params.tox_env }}
       - name: Run tests basic windows
