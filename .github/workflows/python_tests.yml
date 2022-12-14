@@ -99,7 +99,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [[self-hosted,ubuntu-20.04]]
         params: [
           {"py_ver": "3.7", "tox_env": "py37"},
           {"py_ver": "3.8", "tox_env": "py38"},
@@ -133,80 +133,80 @@ jobs:
           name: pytest-${{matrix.os}}-${{matrix.params.py_ver}}
           path: sdks/python/pytest**.xml
 
-  python_wordcount_direct_runner:
-    name: 'Python Wordcount Direct Runner'
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python: ["3.7", "3.8", "3.9", "3.10"]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Install python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python }}
-      - name: Get build dependencies
-        working-directory: ./sdks/python
-        run: pip install -r build-requirements.txt
-      - name: Install requirements
-        working-directory: ./sdks/python
-        run: pip install setuptools --upgrade && pip install -e .
-      - name: Run WordCount
-        working-directory: ./sdks/python
-        shell: bash
-        run: python -m apache_beam.examples.wordcount --input MANIFEST.in --output counts
+  # python_wordcount_direct_runner:
+  #   name: 'Python Wordcount Direct Runner'
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os: [ubuntu-latest, macos-latest, windows-latest]
+  #       python: ["3.7", "3.8", "3.9", "3.10"]
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
+  #     - name: Install python
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: ${{ matrix.python }}
+  #     - name: Get build dependencies
+  #       working-directory: ./sdks/python
+  #       run: pip install -r build-requirements.txt
+  #     - name: Install requirements
+  #       working-directory: ./sdks/python
+  #       run: pip install setuptools --upgrade && pip install -e .
+  #     - name: Run WordCount
+  #       working-directory: ./sdks/python
+  #       shell: bash
+  #       run: python -m apache_beam.examples.wordcount --input MANIFEST.in --output counts
 
-  python_wordcount_dataflow:
-    name: 'Python Wordcount Dataflow'
-    needs:
-      - build_python_sdk_source
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python: ["3.7", "3.8", "3.9", "3.10"]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Install python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python }}
-      - name: Install go
-        uses: actions/setup-go@v3
-        with:
-          go-version: '1.18'
-      - name: Download source from artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: python_sdk_source
-          path: apache-beam-source
-      - name: Authenticate on GCP
-        uses: google-github-actions/setup-gcloud@v0
-        with:
-          service_account_email: ${{ secrets.GCP_SA_EMAIL }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          export_default_credentials: true
-      - name: Get build dependencies
-        working-directory: ./sdks/python
-        run: pip install -r build-requirements.txt
-      - name: Install requirements
-        working-directory: ./sdks/python
-        run: pip install setuptools --upgrade && pip install -e ".[gcp]"
-      - name: Run WordCount
-        working-directory: ./sdks/python
-        shell: bash
-        run: |
-          python -m apache_beam.examples.wordcount \
-            --input gs://dataflow-samples/shakespeare/kinglear.txt \
-            --output gs://${{ secrets.GCP_TESTING_BUCKET }}/python_wordcount_dataflow/counts \
-            --runner DataflowRunner \
-            --project ${{ secrets.GCP_PROJECT_ID }} \
-            --region ${{ secrets.GCP_REGION }} \
-            --temp_location gs://${{ secrets.GCP_TESTING_BUCKET }}/tmp/python_wordcount_dataflow/ \
-            --sdk_location ../../apache-beam-source/apache-beam-source.tar.gz
+  # python_wordcount_dataflow:
+  #   name: 'Python Wordcount Dataflow'
+  #   needs:
+  #     - build_python_sdk_source
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os: [ubuntu-latest, macos-latest, windows-latest]
+  #       python: ["3.7", "3.8", "3.9", "3.10"]
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
+  #     - name: Install python
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: ${{ matrix.python }}
+  #     - name: Install go
+  #       uses: actions/setup-go@v3
+  #       with:
+  #         go-version: '1.18'
+  #     - name: Download source from artifacts
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: python_sdk_source
+  #         path: apache-beam-source
+  #     - name: Authenticate on GCP
+  #       uses: google-github-actions/setup-gcloud@v0
+  #       with:
+  #         service_account_email: ${{ secrets.GCP_SA_EMAIL }}
+  #         service_account_key: ${{ secrets.GCP_SA_KEY }}
+  #         project_id: ${{ secrets.GCP_PROJECT_ID }}
+  #         export_default_credentials: true
+  #     - name: Get build dependencies
+  #       working-directory: ./sdks/python
+  #       run: pip install -r build-requirements.txt
+  #     - name: Install requirements
+  #       working-directory: ./sdks/python
+  #       run: pip install setuptools --upgrade && pip install -e ".[gcp]"
+  #     - name: Run WordCount
+  #       working-directory: ./sdks/python
+  #       shell: bash
+  #       run: |
+  #         python -m apache_beam.examples.wordcount \
+  #           --input gs://dataflow-samples/shakespeare/kinglear.txt \
+  #           --output gs://${{ secrets.GCP_TESTING_BUCKET }}/python_wordcount_dataflow/counts \
+  #           --runner DataflowRunner \
+  #           --project ${{ secrets.GCP_PROJECT_ID }} \
+  #           --region ${{ secrets.GCP_REGION }} \
+  #           --temp_location gs://${{ secrets.GCP_TESTING_BUCKET }}/tmp/python_wordcount_dataflow/ \
+  #           --sdk_location ../../apache-beam-source/apache-beam-source.tar.gz
